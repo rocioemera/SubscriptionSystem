@@ -1,0 +1,23 @@
+<!-- Header -->
+<div id="subscription_menu"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	<header id="header">
+		<h1>${MODULE_NAME}</h1>
+		<nav id="nav">
+			<ul id="subscription_mainMenu">
+				<li><a href="${pageContext.request.contextPath}/subscriptionPkg/listSubscription.htm">Subscription</a></li>
+				<li><a href="${pageContext.request.contextPath}/item/listItem.htm"></a>Item</li>
+			</ul>
+		</nav>
+	</header>
+	<div id="subscription_appMenu">
+		<c:if test="${fn:length(AppMenu) > 0}">
+			<nav id="nav_2">
+				<c:forEach items="${AppMenu}" var="appItemMenu" >
+					<div class="sub_itemSubMenu"><a href="${pageContext.request.contextPath}/${appItemMenu.url}">${appItemMenu.name}</a></div>
+				</c:forEach>
+			</nav>
+		</c:if>
+	</div>
+</div>

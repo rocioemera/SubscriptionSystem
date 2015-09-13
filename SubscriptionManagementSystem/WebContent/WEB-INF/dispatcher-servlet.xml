@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="viewResolver" 
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+		p:prefix="/WEB-INF/jsp/" 
+		p:suffix=".jsp" />
+	
+	<bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	    <property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver" />
+        <property name="url" value="jdbc:derby://localhost:1527/subscriptionDB;create=true" />
+        <property name="username" value="rocio" />
+        <property name="password" value="rocio" />
+	</bean>
+	
+	<bean id="sessionFactorySubscriptionMng" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="myDataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.subscriptionmng.model.admin.SubscriptionPkgImp</value>
+				<value>com.subscriptionmng.model.admin.ItemImp</value>
+				<value>com.subscriptionmng.model.admin.ItemProduct</value>
+				<value>com.subscriptionmng.model.admin.ItemService</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="bItemMapper" class="com.subscriptionmng.data.ItemMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="bSubscriptionMapper" class="com.subscriptionmng.data.SubscriptionMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="conversionService"
+        class="org.springframework.context.support.ConversionServiceFactoryBean">
+	    <property name="converters">
+	        <set>
+	            <bean id="converterIDToItem" class="com.subscriptionmng.converter.ItemIDToItem">
+					<property name="itemMapper" ref="bItemMapper"/>
+				</bean>
+	        </set>
+	    </property>
+	</bean>
+	
+	<bean id="ItemModel" class="com.subscriptionmng.model.admin.ItemImp">
+		<property name="itemMapper" ref="bItemMapper"/>
+	</bean>
+	
+	<bean id="SubscriptionModel" class="com.subscriptionmng.model.admin.SubscriptionPkgImp">
+		<property name="subscriptionMapper" ref="bSubscriptionMapper"/>
+	</bean>
+	
+	<bean name="/item/*.htm" class="com.subscriptionmng.controller.ItemController" >
+		<property name="item" ref="ItemModel" />
+	</bean>
+	
+	<bean name="/subscriptionPkg/*.htm" class="com.subscriptionmng.controller.SubscriptionController" >
+		<property name="subscription" ref="SubscriptionModel" />
+		<property name="item" ref="ItemModel" />
+		<!-- <property name="conversionService" ref="conversionService" /> -->
+	</bean>
+	
+</beans>

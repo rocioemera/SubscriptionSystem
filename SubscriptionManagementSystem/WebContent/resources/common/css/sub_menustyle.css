@@ -1,0 +1,51 @@
+@CHARSET "ISO-8859-1";
+.sub_mainMenu{
+	width: 100%;
+	margin: 1 2;
+	display: block;	
+}
+.sub_itemMainMenu{
+	display: inline-block;
+	margin: 1px; 
+	fonct-size: 14px;
+}
+.sub_appMenu{
+	width: 100%;
+	margin: 1 1;
+	display: block;
+}
+#subscription_appMenu{
+	background-color: grey;
+	width: 100%;
+}
+.sub_itemSubMenu{
+	display: inline-block;
+	margin: 1px; 
+	color: white;
+	height: 2em;
+	padding: 0 1em;
+}
+#sub_reportContent{
+	
+}
+#sub_headerReportContent{
+	font-size: 1.4em;
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    background-color: lightgray;
+}
+#sub_headerReportContent > th{
+	font-weight: 600;	
+}
+#sub_pickItemSubscription{
+	border: 1px;
+}
+.sub_notEdit{
+	readonly:"true";
+	disabled:"true"
+}
+#sub_tableForm{
+	border:solid;
+	border-color:lightgray;
+}
