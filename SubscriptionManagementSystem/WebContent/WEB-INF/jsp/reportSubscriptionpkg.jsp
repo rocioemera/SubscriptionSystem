@@ -30,7 +30,7 @@
 							<th>Name</th>
 							<th>Description</th>
 							<th>Price</th>
-							<th>Status</th>
+							<th>Stock</th>
 							<th>Edit</th>
 							<th>Delete</th>
 						</thead>
@@ -40,9 +40,9 @@
 									<td>${subscription.getName()}</td>
 									<td>${subscription.getDescription()}</td>
 									<td>${subscription.getPrice()}</td>
-									<td></td>
+									<td>${subscription.getStock()}</td>
 									<td><a href="editSubscription.htm?ID=${subscription.getID()}">Edit</a></td>
-									<th><a href="deleteSubscription.htm?ID=${subscription.getID()}">Delete</a></th>
+									<td><a href="deleteSubscription.htm?ID=${subscription.getID()}">Delete</a></td>
 								</tr>
 							</c:forEach>
 						</tbody>

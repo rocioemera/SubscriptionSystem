@@ -18,19 +18,22 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import com.subscriptionmng.data.ItemMapperImp;
 import com.subscriptionmng.data.SubscriptionMapperImp;
+import com.subscriptionmng.service.Item;
 
 @Entity
 @Table(name="Item")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "itemType",discriminatorType = DiscriminatorType.STRING)
 public class ItemImp implements Serializable,Item{
-	private long ID;
+	private Long ID;
 	private String name;
 	private String description;
 	private String itemType;
+	private Long version;
 	//private ArrayList<SubscriptionPkg> subscriptionPkg; 
 	
 	//DAO for subscription
@@ -39,12 +42,21 @@ public class ItemImp implements Serializable,Item{
 	@Id
     @Column(name = "item_ID")
     @GeneratedValue
-	public long getID() {
+	public Long getID() {
 		return ID;
 	}
-
-	public void setID(long iD) {
+	public void setID(Long iD) {
 		this.ID = iD;
+	}
+	
+	@Version
+    @Column(name="OPTLOCK",nullable = false,columnDefinition = "BIGINT default 0")
+	//to manage optimistic lock strategies in long conversations
+	public Long getVersion() {
+		return version;
+	}
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 
 	@Column(name = "name")
@@ -106,17 +118,14 @@ public class ItemImp implements Serializable,Item{
 		return "Item [ID=" + ID + ", name=" + name + ", description=" + description + ", itemType=" + itemType + "]";
 	}
 
-	/**@ManyToMany
-	@JoinTable(name="Subscriptionpkg_Item",
-		joinColumns={@JoinColumn(name="item_ID")},
-		inverseJoinColumns={@JoinColumn(name="subscriptionpkg_ID")})
-	public ArrayList<SubscriptionPkg> getSubscriptionPkg() {
-		return subscriptionPkg;
-	}
+	//@ManyToMany(mappedBy = "items")
+	//public ArrayList<SubscriptionPkg> getSubscriptionPkg() {
+	//	return subscriptionPkg;
+	//}
 
-	public void setSubscriptionPkg(ArrayList<SubscriptionPkg> subscriptionPkg) {
-		this.subscriptionPkg = subscriptionPkg;
-	}*/
+	//public void setSubscriptionPkg(ArrayList<SubscriptionPkg> subscriptionPkg) {
+	//	this.subscriptionPkg = subscriptionPkg;
+	//}
 
 	@Transient
 	public ItemMapperImp getItemMapper() {
@@ -155,7 +164,6 @@ public class ItemImp implements Serializable,Item{
 		// TODO Auto-generated method stub
 		//First check if the item does not belong to any subscription
 		//If the item belong to a subscription it can not be update
-
 		itemMapper.deleteItem(ID);
 		return false;
 	}

@@ -3,6 +3,7 @@ package com.subscriptionmng.data;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.subscriptionmng.model.admin.ItemImp;
@@ -38,11 +39,12 @@ public class ItemMapperImp extends GenericMapper implements ItemMapper{
 		return hibernateTemplate.find("from ItemImp");
 	}
 	
-	public boolean deleteItem(long item_ID){
+	public boolean deleteItem(long item_ID) {
 		ItemImp item = hibernateTemplate.load(ItemImp.class, new Long(item_ID));
 		if(item!=null){
 			hibernateTemplate.delete(item);
 		}
 		return true;
 	}
+	
 }

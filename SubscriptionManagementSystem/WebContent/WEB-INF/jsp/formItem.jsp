@@ -21,7 +21,7 @@
 	<div id="page-wrapper">
 		<jsp:include page="menu.jspx"/>
 		<section id="main" class="container">
-			<form:form action="${REQ_ACTION}" commandName="itemV">
+			<form:form action="${REQ_ACTION}" commandName="itemV" style="background-color: white;">
 				<form:hidden path="ID" />
 			    <table id="sub_tableForm">
 					<tr>

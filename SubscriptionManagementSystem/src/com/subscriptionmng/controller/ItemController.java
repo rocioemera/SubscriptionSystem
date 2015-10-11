@@ -15,16 +15,17 @@ import com.subscriptionmng.helper.ItemHelper;
 import com.subscriptionmng.model.admin.ItemImp;
 import com.subscriptionmng.model.admin.ItemProduct;
 import com.subscriptionmng.model.menu.Menu;
+import com.subscriptionmng.service.Item;
 
 public class ItemController extends MultiActionController{
-	private ItemImp item;
+	private Item item;
 	public final String MODULE_NAME="Items";
 	
-    public ItemImp getItem() {
+    public Item getItem() {
 		return item;
 	}
 
-	public void setItem(ItemImp item) {
+	public void setItem(Item item) {
 		this.item = item;
 	}
 
@@ -94,8 +95,8 @@ public class ItemController extends MultiActionController{
 	//FUNCTION FOR TEH VIEW
 	public List<Menu> getSubMenuModule(){
 		List<Menu> m=new ArrayList<Menu>();
-		m.add(new Menu("List Item","item/listItem.htm"));
-		m.add(new Menu("Create Item","item/displayItem.htm"));
+		m.add(new Menu("List Item","admin/item/listItem.htm"));
+		m.add(new Menu("Create Item","admin/item/displayItem.htm"));
 		return m;
 	}
 }

@@ -19,36 +19,43 @@ import com.subscriptionmng.data.SubscriptionMapperImp;
 import com.subscriptionmng.model.admin.ItemImp;
 import com.subscriptionmng.model.admin.SubscriptionPkgImp;
 import com.subscriptionmng.model.menu.Menu;
+import com.subscriptionmng.service.Item;
+import com.subscriptionmng.service.SubscriptionPkg;
 
 //import org.springframework.web.bind.annotation.InitBinder;
 //import org.springframework.web.bind.annotation.ModelAttribute;
 
 
 public class SubscriptionController extends MultiActionController{
-	private SubscriptionPkgImp subscription;
-	private ItemImp item;
+	private SubscriptionPkg subscription;
+	private Item item;
+	private ItemMapperImp itemMapper;
+	
 	public final String MODULE_NAME="Subscription";
 	
-	public SubscriptionPkgImp getSubscription() {
+	public SubscriptionPkg getSubscription() {
 		return subscription;
 	}
-
-	public void setSubscription(SubscriptionPkgImp subscription) {
+	public void setSubscription(SubscriptionPkg subscription) {
 		this.subscription = subscription;
 	}
-
-	public ItemImp getItem() {
+	public Item getItem() {
 		return item;
 	}
-
-	public void setItem(ItemImp item) {
+	public void setItem(Item item) {
 		this.item = item;
+	}
+	public ItemMapperImp getItemMapper() {
+		return itemMapper;
+	}
+	public void setItemMapper(ItemMapperImp itemMapper) {
+		this.itemMapper = itemMapper;
 	}
 
 	protected void initBinder(HttpServletRequest request,
 			ServletRequestDataBinder binder){
     	binder.registerCustomEditor(List.class, "items", 
-    			new CustomFormBinder(item.getItemMapper(), List.class));
+    			new CustomFormBinder(itemMapper, List.class));
     }
 	
 	public ModelAndView addSubscription(HttpServletRequest request,
@@ -125,9 +132,11 @@ public class SubscriptionController extends MultiActionController{
 	
 	public List<Menu> getSubMenuModule(){
 		List<Menu> m=new ArrayList<Menu>();
-		m.add(new Menu("List Subscription","subscriptionPkg/listSubscription.htm"));
-		m.add(new Menu("Create Subscription","subscriptionPkg/displaySubscription.htm"));
+		m.add(new Menu("List Subscription","admin/subscriptionPkg/listSubscription.htm"));
+		m.add(new Menu("Create Subscription","admin/subscriptionPkg/displaySubscription.htm"));
 		return m;
 	}
+
+	
 	
 }

@@ -4,7 +4,6 @@
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@page import="java.util.ArrayList" %>
-<%@page import="com.subscriptionmng.model.admin.Item" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -24,8 +23,9 @@
 	<div id="page-wrapper">
 		<jsp:include page="menu.jspx"/>
 		<section id="main" class="container">
-			<form:form action="${REQ_ACTION}" commandName="subscriptionV">
+			<form:form action="${REQ_ACTION}" commandName="subscriptionV" style="background-color: white;">
 				<form:hidden path="ID" />
+				<form:hidden path="version" />
 			    <table id="sub_tableForm">
 			    	<tr>
 						<td colspan="2"><input type="submit" value=${FORM_SUBMIT_VALUE}></td>
@@ -42,6 +42,11 @@
 						<td>Price :</td>
 						<td><form:input path="price" /></td>
 					</tr >
+					<tr>
+						<td>Stock :</td>
+						<td><form:input path="stock" /></td>
+					</tr >
+					<tr>
 						<td colspan="2">
 							<div id="sub_pickItemSubscription">
 							<div style="color:#e89980;padding-bottom: 2px">Select Items:</div>
@@ -50,6 +55,7 @@
 								itemLabel="name" itemValue="ID" element="div"/>
 							</div>
 						</td>
+					</tr >
 				</table>
 				
 			</form:form>

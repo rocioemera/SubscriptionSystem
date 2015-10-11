@@ -3,12 +3,24 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	
 	<bean id="viewResolver" 
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
 		p:prefix="/WEB-INF/jsp/" 
 		p:suffix=".jsp" />
+	
+	<bean id="dataSourceSec" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver" />
+	    <property name="url" value="jdbc:derby://localhost:1527/subscriptionDB;create=true" />
+	    <property name="username" value="rocio" />
+	    <property name="password" value="rocio" />
+	</bean>
 	
 	<bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	    <property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver" />
@@ -21,10 +33,17 @@
 		<property name="dataSource" ref="myDataSource" />
 		<property name="annotatedClasses">
 			<list>
+				<value>com.subscriptionmng.model.security.UserImp</value>
+				<value>com.subscriptionmng.model.security.RoleImp</value>
+				<value>com.subscriptionmng.model.admin.CustomerImp</value>
+				<value>com.subscriptionmng.model.admin.StaffImp</value>
 				<value>com.subscriptionmng.model.admin.SubscriptionPkgImp</value>
 				<value>com.subscriptionmng.model.admin.ItemImp</value>
 				<value>com.subscriptionmng.model.admin.ItemProduct</value>
 				<value>com.subscriptionmng.model.admin.ItemService</value>
+				<value>com.subscriptionmng.model.admin.Customer_SubscriptionImp</value>
+				<value>com.subscriptionmng.model.admin.Subscription_CancellationImp</value>
+				<value>com.subscriptionmng.model.admin.Subscription_StockImp</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -41,6 +60,30 @@
 	</bean>
 	
 	<bean id="bSubscriptionMapper" class="com.subscriptionmng.data.SubscriptionMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="bUserMapper" class="com.subscriptionmng.data.UserMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="bRoleMapper" class="com.subscriptionmng.data.RoleMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="bCustomerMapper" class="com.subscriptionmng.data.CustomerMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="bCustomerSubscriptionMapper" class="com.subscriptionmng.data.Customer_SubscriptionMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="bSubscriptionCancellationMapper" class="com.subscriptionmng.data.Subscription_CancellationMapperImp">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
+	</bean>
+	
+	<bean id="bSubscriptionStockMapper" class="com.subscriptionmng.data.Subscription_StockMapperImp">
 		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"/>
 	</bean>
 	
@@ -63,14 +106,116 @@
 		<property name="subscriptionMapper" ref="bSubscriptionMapper"/>
 	</bean>
 	
-	<bean name="/item/*.htm" class="com.subscriptionmng.controller.ItemController" >
+	<bean id="UserModel" class="com.subscriptionmng.model.security.UserImp">
+		<property name="userMapper" ref="bUserMapper"/>
+	</bean>
+	
+	<bean id="CustomerModel" class="com.subscriptionmng.model.admin.CustomerImp">
+		<property name="customerMapper" ref="bCustomerMapper"/>
+	</bean>
+	
+	<bean id="CustomerSubscriptionModel" class="com.subscriptionmng.model.admin.Customer_SubscriptionImp">
+		<property name="custSubsMapp" ref="bCustomerSubscriptionMapper"/>
+	</bean>
+	
+	<bean id="SubscriptionCancellationModel" class="com.subscriptionmng.model.admin.Subscription_CancellationImp">
+		<property name="subsCancellationMapper" ref="bSubscriptionCancellationMapper"/>
+		<property name="custSubscriptionMapper" ref="bCustomerSubscriptionMapper"/>
+	</bean>
+	
+	<bean id="SubscriptionStockModel" class="com.subscriptionmng.model.admin.Subscription_StockImp">
+		<property name="subscriptionStockMapper" ref="bSubscriptionStockMapper"/>
+	</bean>
+	
+	<bean id="PurchaseSubscriptionModel" class="com.subscriptionmng.model.admin.PurchaseSubscriptionImp">
+		<property name="subscription_Stock" ref="SubscriptionStockModel"/>
+		<property name="customerSubscription" ref="CustomerSubscriptionModel"/>
+		<property name="subscription" ref="SubscriptionModel"/>
+	</bean>
+	
+	<bean name="/admin/item/*.htm" class="com.subscriptionmng.controller.ItemController" >
 		<property name="item" ref="ItemModel" />
 	</bean>
 	
-	<bean name="/subscriptionPkg/*.htm" class="com.subscriptionmng.controller.SubscriptionController" >
+	<bean name="/admin/subscriptionPkg/*.htm" class="com.subscriptionmng.controller.SubscriptionController" >
 		<property name="subscription" ref="SubscriptionModel" />
 		<property name="item" ref="ItemModel" />
-		<!-- <property name="conversionService" ref="conversionService" /> -->
+		<property name="itemMapper" ref="bItemMapper" /> 
 	</bean>
+	
+	<bean name="/login/*.htm" class="com.subscriptionmng.controller.LoginController" >
+		
+	</bean>
+	
+	<bean name="/welcome*.htm" class="com.subscriptionmng.controller.welcomeController" >
+		
+	</bean>
+	
+	<bean name="/customerManage/*.htm" class="com.subscriptionmng.controller.CustomerManageController" >
+		<property name="subscription" ref="SubscriptionModel" />
+		<property name="customer" ref="CustomerModel" />
+		<property name="cusSub" ref="CustomerSubscriptionModel" />
+		<property name="subsCancellation" ref="SubscriptionCancellationModel" />
+		<property name="purchaseSubscription" ref="PurchaseSubscriptionModel" />
+	</bean>
+	
+	<bean name="/home*.htm" class="com.subscriptionmng.controller.CustomerManageController" >
+		<property name="subscription" ref="SubscriptionModel" />
+	</bean>
+	
+	<!-- spring security tags libs work -->
+	<bean id="expressionHandler" 
+		class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler" />
+
+	<tx:advice id="txAdviceDefault" transaction-manager="transactionManager">
+	    <tx:attributes>
+			<tx:method name="read*" read-only="false" isolation="READ_COMMITTED" />
+			<tx:method name="list*" read-only="false" isolation="READ_COMMITTED" /> 
+			<!-- the other methods must execute in the context of a transaction with read-write semantics -->
+			<tx:method name="createNew*" propagation="REQUIRED" read-only="false" rollback-for="Exception.class"/>
+			<tx:method name="modify*" propagation="REQUIRED" read-only="false" rollback-for="Exception.class"/>
+			<tx:method name="remove*" propagation="REQUIRED" read-only="false" rollback-for="Exception.class"/>
+			<tx:method name="separateSubscription" propagation="REQUIRED" isolation="READ_COMMITTED" read-only="false" rollback-for="Exception.class"/>
+			<tx:method name="*"/>
+	    </tx:attributes>
+	</tx:advice>
+	
+	<tx:advice id="txAdvicePurchase" transaction-manager="transactionManager">
+	    <tx:attributes>
+			<tx:method name="purchaseSubscription" propagation="REQUIRED" read-only="false" rollback-for="Exception.class"/>
+	    </tx:attributes>
+	</tx:advice>
+	
+	<tx:advice id="txAdviceCancellation" transaction-manager="transactionManager">
+	    <tx:attributes>
+			<tx:method name="requestCancellation" isolation="READ_COMMITTED" propagation="REQUIRES_NEW" read-only="false" />
+			<tx:method name="approveCancellation" isolation="READ_COMMITTED" propagation="REQUIRES_NEW" read-only="false" />
+	    </tx:attributes>
+	</tx:advice>
+	
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactorySubscriptionMng"></property>
+	</bean>
+	
+	<!-- ensure that the above transactional advice runs for any execution
+        of an operation defined by the Service interfaces -->
+	<aop:config>
+	    <aop:pointcut id="purchaseServicePointCut" 
+	    	expression="execution(* com.subscriptionmng.model.admin.PurchaseSubscriptionImp.*(..))" /> 
+	    <aop:pointcut id="cancellationServicePointCut" 
+	    	expression="execution(* com.subscriptionmng.service.Subscription_Cancellation.*(..))" />
+	    <aop:pointcut id="defaultServicePointCut" 
+	    	expression="execution(* com.subscriptionmng.service.*.*(..))" />
+	    	
+	    <aop:advisor advice-ref="txAdvicePurchase" pointcut-ref="purchaseServicePointCut" /> 
+	    <aop:advisor advice-ref="txAdviceCancellation" pointcut-ref="cancellationServicePointCut" /> 
+	    <aop:advisor advice-ref="txAdviceDefault" pointcut-ref="defaultServicePointCut" /> 
+	    
+	</aop:config>
+	
+	 
+	 
+
 	
 </beans>

@@ -36,6 +36,24 @@ public class SubscriptionMapperImp extends GenericMapper implements Subscription
 		//of the package
 		return hibernateTemplate.find("from SubscriptionPkgImp");
 	}
+	
+	public List<SubscriptionPkgImp> listSubscription(String search){
+		//load the subscriptionpkg information but not load the list of items
+		//of the package
+		String query="SELECT s FROM SubscriptionPkgImp s " 
+				+" WHERE lower(s.name) like (:search) or lower(s.description) like (:search)"
+	 			+ "or str(s.price) = (:price)";
+
+		String[] paramNames = new String[]{"search","price"};
+		String[] paramValues = new String[]{"%"+search.toLowerCase()+"%",search};
+		
+		List<SubscriptionPkgImp> subscriptions= hibernateTemplate.findByNamedParam(query, 
+				paramNames,paramValues);
+		
+		System.out.println(search);
+		System.out.println(subscriptions);
+		return subscriptions;
+	}
 
 	public boolean insertSubscription(SubscriptionPkgImp subs){
 		hibernateTemplate.save(subs);
@@ -72,7 +90,10 @@ public class SubscriptionMapperImp extends GenericMapper implements Subscription
 			System.out.println(":(");
 			return null;
 		}
-		
 	}
-
+	
+	public void reduceStock(long subscriptionPkg_ID,int amount){
+		String query="UPDATE SubscriptionPkgImp s SET s.stock=s.stock-1" +
+	 			"WHERE s.ID = (:subscription_id)";
+	}
 }
